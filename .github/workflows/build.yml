@@ -27,12 +27,20 @@ jobs:
 
       - name: Download YOLO model
         run: |
+          mkdir -p models
           python -c "
+          import urllib.request
           import os
-          os.makedirs('models', exist_ok=True)
-          from ultralytics import YOLO
-          model = YOLO('yolov11n.pt')
-          model.export(format='pt')  # 确保模型文件存在
+          
+          url = 'https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov11n.pt'
+          save_path = 'models/yolov11n.pt'
+          
+          if not os.path.exists(save_path):
+              print('Downloading yolov11n.pt...')
+              urllib.request.urlretrieve(url, save_path)
+              print('Download completed!')
+          else:
+              print('Model already exists.')
           "
 
       - name: Build with PyInstaller (macOS)
