@@ -98,5 +98,6 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+        token: ${{ secrets.GITHUB_TOKEN }}   # ← 新增这一行
           files: artifacts/**/*
           generate_release_notes: true
