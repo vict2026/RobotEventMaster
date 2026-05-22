@@ -87,6 +87,10 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
 
+    # ✅ 新增这一段权限
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/download-artifact@v4
         with:
