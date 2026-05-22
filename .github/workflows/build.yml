@@ -23,28 +23,50 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt pyinstaller
+          pip install -r requirements.txt pyinstaller ultralytics
+
+      - name: Download YOLO model
+        run: |
+          python -c "
+          import os
+          os.makedirs('models', exist_ok=True)
+          from ultralytics import YOLO
+          model = YOLO('yolov11n.pt')
+          model.export(format='pt')  # 确保模型文件存在
+          "
 
       - name: Build with PyInstaller (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           pyinstaller --clean --onedir --console --name "RobotEventMaster" \
-            --add-data "app.py:." --add-data "config.py:." \
-            --add-data "database:database" --add-data "services:services" \
-            --add-data "ui:ui" --add-data "api:api" \
-            --add-data "data:data" --add-data "models:models" \
-            --collect-all streamlit --hidden-import=apscheduler run.py
+            --add-data "app.py:." \
+            --add-data "config.py:." \
+            --add-data "database:database" \
+            --add-data "services:services" \
+            --add-data "ui:ui" \
+            --add-data "api:api" \
+            --add-data "data:data" \
+            --add-data "models:models" \
+            --collect-all streamlit \
+            --hidden-import=apscheduler \
+            run.py
 
       - name: Build with PyInstaller (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           pyinstaller --clean --onedir --console --name "RobotEventMaster" `
-            --add-data "app.py;." --add-data "config.py;." `
-            --add-data "database;database" --add-data "services;services" `
-            --add-data "ui;ui" --add-data "api;api" `
-            --add-data "data;data" --add-data "models;models" `
-            --collect-all streamlit --hidden-import=apscheduler run.py
+            --add-data "app.py;." `
+            --add-data "config.py;." `
+            --add-data "database;database" `
+            --add-data "services;services" `
+            --add-data "ui;ui" `
+            --add-data "api;api" `
+            --add-data "data;data" `
+            --add-data "models;models" `
+            --collect-all streamlit `
+            --hidden-import=apscheduler `
+            run.py
 
       - uses: actions/upload-artifact@v4
         with:
